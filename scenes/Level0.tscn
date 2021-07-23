@@ -1,0 +1,170 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/Target.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/Ring.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scripts/Level0.gd" type="Script" id=4]
+[ext_resource path="res://assets/music/track1.wav" type="AudioStream" id=5]
+
+[sub_resource type="ProceduralSky" id=11]
+sky_top_color = Color( 0.647059, 0.909804, 0.945098, 1 )
+sky_horizon_color = Color( 1, 0.631373, 0, 1 )
+sky_curve = 0.2
+ground_bottom_color = Color( 0.52549, 0.701961, 0.85098, 1 )
+ground_horizon_color = Color( 1, 0.631373, 0, 1 )
+sun_color = Color( 0.87451, 1, 0, 1 )
+sun_latitude = 2.0
+sun_energy = 3.0
+
+[sub_resource type="Environment" id=2]
+background_mode = 2
+background_sky = SubResource( 11 )
+
+[sub_resource type="PlaneMesh" id=3]
+size = Vector2( 200, 200 )
+subdivide_width = 64
+subdivide_depth = 64
+
+[sub_resource type="Shader" id=4]
+code = "shader_type spatial;
+render_mode specular_toon;
+
+uniform float height_scale = 0.5;
+uniform sampler2D noise;
+uniform sampler2D normalmap;
+
+float wave(vec2 position){
+  position += texture(noise, position / 10.0).x * 2.0 - 1.0;
+  vec2 wv = 1.0 - abs(sin(position));
+  return pow(1.0 - pow(wv.x * wv.y, 0.65), 4.0);
+}
+
+float height(vec2 position, float time) {
+  float d = wave((position + time * 0.2) * 0.4) * 0.3;
+  d += wave((position - time * 0.2) * 0.3) * 0.3;
+  d += wave((position + time * 0.2) * 0.5) * 0.2;
+  d += wave((position - time * 0.2) * 0.6) * 0.2;
+  return d;
+}
+
+varying vec2 tex_position;
+
+void vertex() {
+	vec2 pos = VERTEX.xz;
+	float k = height(pos, TIME);
+	VERTEX.y = k;
+	NORMAL = normalize(vec3(k - height(pos + vec2(0.1, 0.0), TIME), 0.1, k - height(pos + vec2(0.0, 0.1), TIME)));
+}
+
+void fragment() {
+	float fresnel = sqrt(1.0 - dot(NORMAL, VIEW));
+	RIM = 0.2;
+	METALLIC = 0.0;
+	ROUGHNESS = 0.01 * (1.0 - fresnel);
+	ALBEDO = vec3(0.05, 0.15, 0.25) + (0.1 * fresnel);
+}"
+
+[sub_resource type="OpenSimplexNoise" id=5]
+
+[sub_resource type="NoiseTexture" id=6]
+noise = SubResource( 5 )
+
+[sub_resource type="NoiseTexture" id=7]
+as_normalmap = true
+noise = SubResource( 5 )
+
+[sub_resource type="ShaderMaterial" id=8]
+shader = SubResource( 4 )
+shader_param/height_scale = 10.0
+shader_param/noise = SubResource( 6 )
+shader_param/normalmap = SubResource( 7 )
+
+[sub_resource type="PlaneMesh" id=9]
+size = Vector2( 200000, 200000 )
+
+[sub_resource type="SpatialMaterial" id=12]
+albedo_color = Color( 0.52549, 0.701961, 0.85098, 1 )
+roughness = 0.2
+clearcoat_enabled = true
+clearcoat = 1.0
+clearcoat_gloss = 1.0
+
+[sub_resource type="ConcavePolygonShape" id=10]
+data = PoolVector3Array( 1000, 0, 1000, -1000, 0, 1000, 1000, 0, -1000, -1000, 0, 1000, -1000, 0, -1000, 1000, 0, -1000 )
+
+[node name="Level0" type="Spatial"]
+script = ExtResource( 4 )
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21, 0 )
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 2 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -1, -1.19209e-07, 0, 1.19209e-07, -1, 0, 9, 0 )
+shadow_enabled = true
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 10, 0, 0, 0, 4, 0, 0, 0, 10, -3, -4, 15 )
+visible = false
+mesh = SubResource( 3 )
+material/0 = SubResource( 8 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -4, 7 )
+mesh = SubResource( 9 )
+material/0 = SubResource( 12 )
+
+[node name="StaticBody" type="StaticBody" parent="MeshInstance2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="MeshInstance2/StaticBody"]
+shape = SubResource( 10 )
+
+[node name="Ring" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21, -32 )
+
+[node name="Ring2" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21, -80 )
+
+[node name="Ring3" parent="." instance=ExtResource( 3 )]
+transform = Transform( -0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 27, 20, -138 )
+
+[node name="Ring4" parent="." instance=ExtResource( 3 )]
+transform = Transform( 0, 0, 1, 0, 1, 0, -1, 0, 0, 75, 20, -172 )
+
+[node name="Ring5" parent="." instance=ExtResource( 3 )]
+transform = Transform( -0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 147, 20, -198 )
+
+[node name="Ring6" parent="." instance=ExtResource( 3 )]
+transform = Transform( -1, 0, 0, 0, 1, 0, 0, 0, -1, 175, 20, -289 )
+
+[node name="Ring7" parent="." instance=ExtResource( 3 )]
+transform = Transform( -1, 0, 0, 0, 0.707107, 0.707107, 0, 0.707107, -0.707107, 175, 48, -345 )
+
+[node name="Ring8" parent="." instance=ExtResource( 3 )]
+transform = Transform( -1, 0, 0, 0, -2.98023e-08, 1, 0, 1, 2.98023e-08, 175, 90, -385 )
+
+[node name="Ring9" parent="." instance=ExtResource( 3 )]
+transform = Transform( -1, 0, 0, 0, -0.707107, 0.707107, 0, 0.707107, 0.707107, 171, 120, -374 )
+
+[node name="Ring10" parent="." instance=ExtResource( 3 )]
+transform = Transform( -1, 0, 0, 0, -1, 0, 0, 0, 1, 171, 133, -347 )
+
+[node name="Ring11" parent="." instance=ExtResource( 3 )]
+transform = Transform( -1, 0, 0, 0, -1, 0, 0, 0, 1, 171, 133, -286 )
+
+[node name="Targets" type="Spatial" parent="."]
+
+[node name="Target" parent="Targets" instance=ExtResource( 2 )]
+transform = Transform( 3.82137e-15, -8.74228e-08, 2, 1.74846e-07, -2, -8.74228e-08, 2, 1.74846e-07, 3.82137e-15, 170, 136, -239 )
+
+[node name="Target2" parent="Targets" instance=ExtResource( 2 )]
+transform = Transform( 3.82137e-15, -8.74228e-08, 2, 1.74846e-07, -2, -8.74228e-08, 2, 1.74846e-07, 3.82137e-15, 109, 146, -235 )
+
+[node name="Target3" parent="Targets" instance=ExtResource( 2 )]
+transform = Transform( 3.82137e-15, -8.74228e-08, 2, 1.74846e-07, -2, -8.74228e-08, 2, 1.74846e-07, 3.82137e-15, 140, 157, -198 )
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 5 )
+autoplay = true

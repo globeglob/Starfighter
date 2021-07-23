@@ -1,0 +1,123 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://assets/eso0932a.jpg" type="Texture" id=1]
+[ext_resource path="res://scenes/Earth.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/Uranus.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/Sun.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/Moon.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/Jupiter.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/Venus.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/Mars.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/DeimosPhobos.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/Asteroid Belt.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scenes/Saturn.tscn" type="PackedScene" id=12]
+[ext_resource path="res://scenes/Asteroid.tscn" type="PackedScene" id=13]
+[ext_resource path="res://scenes/Neptune.tscn" type="PackedScene" id=14]
+[ext_resource path="res://scripts/Level1.gd" type="Script" id=15]
+[ext_resource path="res://assets/music/track2.wav" type="AudioStream" id=16]
+
+[sub_resource type="PanoramaSky" id=1]
+panorama = ExtResource( 1 )
+
+[sub_resource type="Environment" id=2]
+background_mode = 2
+background_sky = SubResource( 1 )
+ambient_light_color = Color( 1, 1, 1, 1 )
+ambient_light_energy = 0.2
+ambient_light_sky_contribution = 0.0
+glow_enabled = true
+glow_bloom = 0.2
+glow_blend_mode = 0
+glow_bicubic_upscale = true
+
+[sub_resource type="BoxShape" id=3]
+
+[node name="Level1" type="Spatial"]
+script = ExtResource( 15 )
+
+[node name="Sun" parent="." instance=ExtResource( 5 )]
+
+[node name="Mercury" parent="Sun" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 2, 3 )
+
+[node name="Venus" parent="Sun" instance=ExtResource( 8 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 2, -15 )
+
+[node name="Earth" parent="Sun" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -31, -3, 9 )
+
+[node name="Moon" parent="Sun/Earth" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, 6 )
+
+[node name="Mars" parent="Sun" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -41, 11, -38 )
+
+[node name="Deimos" parent="Sun/Mars" instance=ExtResource( 10 )]
+transform = Transform( 0.612372, 0.612372, -0.5, -0.774519, 0.591506, -0.224144, 0.158494, 0.524519, 0.836516, 4.08402, 1, 0 )
+
+[node name="Phobos" parent="Sun/Mars" instance=ExtResource( 10 )]
+transform = Transform( 0.774519, -0.591506, 0.224144, -0.168926, 0.148061, 0.974444, -0.609577, -0.792589, 0.0147546, -3.91599, -1, 0 )
+
+[node name="Asteroid Belt" parent="Sun" instance=ExtResource( 11 )]
+transform = Transform( 0.965926, 0.258819, 0, -0.25, 0.933013, -0.258819, -0.0669873, 0.25, 0.965926, 0, 0, 0 )
+
+[node name="Jupiter" parent="Sun" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 47, -21, 88 )
+
+[node name="Moon1" parent="Sun/Jupiter" instance=ExtResource( 13 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4 )
+
+[node name="Moon2" parent="Sun/Jupiter" instance=ExtResource( 13 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 2 )
+
+[node name="Moon3" parent="Sun/Jupiter" instance=ExtResource( 13 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, -6 )
+
+[node name="Saturn" parent="Sun" instance=ExtResource( 12 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -69, 1, 138 )
+
+[node name="Moon1" parent="Sun/Saturn" instance=ExtResource( 13 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4 )
+
+[node name="Moon2" parent="Sun/Saturn" instance=ExtResource( 13 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 2 )
+
+[node name="Uranus" parent="Sun" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 130, -12, -140 )
+
+[node name="Moon1" parent="Sun/Uranus" instance=ExtResource( 13 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4 )
+
+[node name="Neptune" parent="Sun" instance=ExtResource( 14 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -136, 39, -180 )
+
+[node name="Moon1" parent="Sun/Neptune" instance=ExtResource( 13 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4 )
+
+[node name="Pluto" parent="Sun" instance=ExtResource( 13 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -326, -13, 35 )
+
+[node name="Charon" parent="Sun/Pluto" instance=ExtResource( 13 )]
+transform = Transform( 0.167303, 0.2, 0.0672432, -0.0577697, 0.3, -0.17851, -0.0931251, 0.173205, 0.231543, 1, 0, 2 )
+
+[node name="Enemies" type="Spatial" parent="Sun"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 2 )
+__meta__ = {
+"_editor_description_": "sa"
+}
+
+[node name="Player" parent="." instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22 )
+
+[node name="Spawn_Area" type="Area" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spawn_Area"]
+transform = Transform( 1000, 0, 0, 0, 200, 0, 0, 0, 1000, 0, 0, 0 )
+shape = SubResource( 3 )
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 16 )
+autoplay = true
