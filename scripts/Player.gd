@@ -66,10 +66,10 @@ func get_input(delta):
 			print("shot")
 			if $RayCast.get_collider().filename == "res://scenes/EnemyBasic.tscn" or $RayCast.get_collider().filename == "res://scenes/Target.tscn" or $RayCast.get_collider().filename == "res://scenes/EnemyBoss.tscn":
 				$RayCast.get_collider().hit()
-		#yield(get_tree().create_timer(0.1), "timeout")
-	else:
+		yield(get_tree().create_timer(0.1), "timeout")
 		$Gun1/Beam.visible = false
 		$Gun2/Beam.visible = false
+		
 		
 
 
